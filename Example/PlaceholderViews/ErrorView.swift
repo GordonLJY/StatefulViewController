@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import StatefulViewController
 
 class ErrorView: BasicPlaceholderView {
 
@@ -47,4 +48,14 @@ class ErrorView: BasicPlaceholderView {
 		centerView.addConstraints(vConstraints)
 	}
 
+}
+
+extension ErrorView: StatefulDataProvider {
+    func didReceive(value: Any?) {
+        if let value = value as? Error {
+            textLabel.text = value.localizedDescription
+        } else {
+            textLabel.text  = "Something went wrong."
+        }
+    }
 }

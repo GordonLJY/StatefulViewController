@@ -10,6 +10,7 @@ import Foundation
 import StatefulViewController
 
 class TableViewController: UITableViewController, StatefulViewController {
+
     fileprivate var dataArray = [String]()
 
     override func viewDidLoad() {
@@ -34,7 +35,7 @@ class TableViewController: UITableViewController, StatefulViewController {
         refresh()
     }
 
-    func refresh() {
+    @objc func refresh() {
         if (lastState == .loading) { return }
 
         startLoading {

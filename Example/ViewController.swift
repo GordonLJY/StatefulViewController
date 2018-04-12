@@ -10,6 +10,7 @@ import UIKit
 import StatefulViewController
 
 class ViewController: UIViewController, StatefulViewController {
+
     fileprivate var dataArray = [String]()
     private let refreshControl = UIRefreshControl()
     @IBOutlet weak var tableView: UITableView!
@@ -36,7 +37,7 @@ class ViewController: UIViewController, StatefulViewController {
         refresh()
     }
     
-    func refresh() {
+    @objc func refresh() {
         if (lastState == .loading) { return }
         
         startLoading {

@@ -10,6 +10,8 @@ import Foundation
 import StatefulViewController
 
 class CollectionViewController: UICollectionViewController, StatefulViewController {
+
+
     fileprivate var dataArray = [String]()
     private let refreshControl = UIRefreshControl()
 
@@ -36,7 +38,7 @@ class CollectionViewController: UICollectionViewController, StatefulViewControll
         refresh()
     }
 
-    func refresh() {
+    @objc func refresh() {
         if (lastState == .loading) { return }
 
         startLoading {

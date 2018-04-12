@@ -20,7 +20,7 @@ extension BackingViewProvider where Self: UIView {
 
 /// Default implementation of StatefulViewController for UIViewController
 extension StatefulViewController {
-    
+
     public var stateMachine: ViewStateMachine {
         return associatedObject(self, key: &stateMachineKey) { [unowned self] in
             return ViewStateMachine(view: self.backingView)
@@ -61,7 +61,7 @@ extension StatefulViewController {
     
     
     // MARK: Transitions
-    
+
     public func setupInitialViewState(_ completion: (() -> Void)? = nil) {
         let isLoading = (lastState == .loading)
         let error: NSError? = (lastState == .error) ? NSError(domain: "com.aschuch.StatefulViewController.ErrorDomain", code: -1, userInfo: nil) : nil
@@ -72,18 +72,19 @@ extension StatefulViewController {
         transitionViewStates(loading: true, animated: animated, completion: completion)
     }
     
-    public func endLoading(animated: Bool = true, error: Error? = nil, completion: (() -> Void)? = nil) {
+    public func endLoading(animated: Bool = true, error: Error? = nil, value: Any? = nil, completion: (() -> Void)? = nil) {
         transitionViewStates(loading: false, error: error, animated: animated, completion: completion)
     }
     
-    public func transitionViewStates(loading: Bool = false, error: Error? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
+    public func transitionViewStates(loading: Bool = false, error: Error? = nil, value: Any? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
         // Update view for content (i.e. hide all placeholder views)
         if hasContent() {
             if let e = error {
                 // show unobstrusive error
                 handleErrorWhenContentAvailable(e)
             }
-            self.stateMachine.transitionToState(.none, animated: animated, completion: completion)
+            // Value parameter in transitionToState prioritize value variable before error variable
+            self.stateMachine.transitionToState(.none, value: (value == nil) ? error : value, animated: animated, completion: completion)
             return
         }
         
@@ -94,7 +95,7 @@ extension StatefulViewController {
         } else if let _ = error {
             newState = .error
         }
-        self.stateMachine.transitionToState(.view(newState.rawValue), animated: animated, completion: completion)
+        self.stateMachine.transitionToState(.view(newState.rawValue), value: (value == nil) ? error : value, animated: animated, completion: completion)
     }
     
     

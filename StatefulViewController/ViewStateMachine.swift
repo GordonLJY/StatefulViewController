@@ -127,7 +127,7 @@ public class ViewStateMachine {
     /// - parameter animated:	true if the transition should fade views in and out
     /// - parameter campletion:	called when all animations are finished and the view has been updated
     ///
-    public func transitionToState(_ state: ViewStateMachineState, animated: Bool = true, completion: (() -> ())? = nil) {
+    public func transitionToState(_ state: ViewStateMachineState, value: Any? = nil, animated: Bool = true, completion: (() -> ())? = nil) {
         lastState = state
         
         queue.async { [weak self] in
@@ -152,7 +152,7 @@ public class ViewStateMachine {
                 case .none:
                     strongSelf.hideAllViews(animated: animated, completion: c)
                 case .view(let viewKey):
-                    strongSelf.showView(forKey: viewKey, animated: animated, completion: c)
+                    strongSelf.showView(forKey: viewKey, animated: animated, value: value, completion: c)
                 }
             }
         }
@@ -161,7 +161,7 @@ public class ViewStateMachine {
     
     // MARK: Private view updates
     
-	fileprivate func showView(forKey state: String, animated: Bool, completion: (() -> ())? = nil) {
+    fileprivate func showView(forKey state: String, animated: Bool, value: Any?, completion: (() -> ())? = nil) {
         // Add the container view
         containerView.frame = view.bounds
         view.addSubview(containerView)
@@ -170,8 +170,9 @@ public class ViewStateMachine {
 
 		if let newView = store[state] {
             newView.alpha = animated ? 0.0 : 1.0
+            (newView as? StatefulDataProvider)?.didReceive(value: value)
             let insets = (newView as? StatefulPlaceholderView)?.placeholderViewInsets() ?? UIEdgeInsets()
-
+            
             // Add new view using AutoLayout
             newView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(newView)
